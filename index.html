@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="0.1.0">
+<meta name="app-version" content="0.1.1">
 <meta name="theme-color" content="#2f4a3a">
 <title>Rangitata Barn</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -112,7 +112,7 @@ textarea{min-height:70px;resize:vertical}
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 
 <script>
-const APP_VERSION = '0.1.0';
+const APP_VERSION = '0.1.1';
 const LS_RECORDS = 'pfebarn_records_v1';
 const LS_PENDING = 'pfebarn_pending_v1';
 const LS_SETTINGS = 'pfebarn_settings_v1';
@@ -182,14 +182,24 @@ function deleteRecord(id){
   pending.add(id); persist(); schedulePush();
 }
 
+// Seed records use fixed ids and fixed old timestamps, and are only added when the id is absent,
+// so a seed can never overwrite a real edit or revive a deleted record (tombstones keep the id).
+const SEED_SETS=[
+  {ts:SEED_TS, note:'Opening count (pen-heads.json, 2 Nov 2026)',
+   pens:[['Pen 1',1],['Pen 2',2],['Pen 3',3],['Pen 4',4],['Pen 5',5],['Pen 6',6]].map(([n,o])=>[n,o,'2026-10-26','pens1-6']),
+   moves:[['seed-1','Pen 1','2026-10-20',80],['seed-2','Pen 2','2026-10-20',80],['seed-3','Pen 3','2026-10-28',80],['seed-4','Pen 4','2026-10-28',23],['seed-5','Pen 4','2026-10-30',57],['seed-6','Pen 5','2026-10-30',80],['seed-7','Pen 6','2026-10-30',34]]},
+  {ts:'2026-11-18T00:00:01.000Z', note:'NAIT arrivals 4/10/11 Nov, 843 on site (Brendon, 18 Nov 2026)',
+   pens:[['Pen 7',7],['Pen 8',8],['Pen 9',9],['Pen 10',10],['Pen 11',11]].map(([n,o])=>[n,o,'2026-11-09','pens7-11']),
+   moves:[['seed2-1','Pen 7','2026-11-04',58],['seed2-2','Pen 7','2026-11-10',22],['seed2-3','Pen 8','2026-11-10',80],['seed2-4','Pen 9','2026-11-10',12],['seed2-5','Pen 9','2026-11-11',68],['seed2-6','Pen 10','2026-11-11',80],['seed2-7','Pen 11','2026-11-11',89]]},
+];
 function seedIfEmpty(){
-  if(Object.keys(records).length) return;
-  const pens=[['Pen 1',1],['Pen 2',2],['Pen 3',3],['Pen 4',4],['Pen 5',5],['Pen 6',6]];
-  const add=(kind,id,date,body)=>{records[id]={id,kind,date,body,updatedAt:SEED_TS,deleted:false};pending.add(id);};
-  pens.forEach(([name,order])=>add('pen','pen:'+name,'2026-10-26',{name,order,dayOne:'2026-10-26',batch:'pens1-6',active:true}));
-  const moves=[['Pen 1','2026-10-20',80],['Pen 2','2026-10-20',80],['Pen 3','2026-10-28',80],['Pen 4','2026-10-28',23],['Pen 4','2026-10-30',57],['Pen 5','2026-10-30',80],['Pen 6','2026-10-30',34]];
-  moves.forEach(([pen,date,head],i)=>add('move','move:seed-'+(i+1),date,{pen,date,type:'in',head,note:'Opening count (pen-heads.json, 2 Nov 2026)'}));
-  persist();
+  let added=false;
+  const add=(kind,id,date,body,ts)=>{if(records[id])return;records[id]={id,kind,date,body,updatedAt:ts,deleted:false};pending.add(id);added=true;};
+  SEED_SETS.forEach(s=>{
+    s.pens.forEach(([name,order,dayOne,batch])=>add('pen','pen:'+name,dayOne,{name,order,dayOne,batch,active:true},s.ts));
+    s.moves.forEach(([id,pen,date,head])=>add('move','move:'+id,date,{pen,date,type:'in',head,note:s.note},s.ts));
+  });
+  if(added)persist();
 }
 
 /* ---------- model ---------- */
