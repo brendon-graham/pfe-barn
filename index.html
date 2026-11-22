@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="0.1.1">
+<meta name="app-version" content="0.1.2">
 <meta name="theme-color" content="#2f4a3a">
 <title>Rangitata Barn</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -112,7 +112,7 @@ textarea{min-height:70px;resize:vertical}
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 
 <script>
-const APP_VERSION = '0.1.1';
+const APP_VERSION = '0.1.2';
 const LS_RECORDS = 'pfebarn_records_v1';
 const LS_PENDING = 'pfebarn_pending_v1';
 const LS_SETTINGS = 'pfebarn_settings_v1';
@@ -124,7 +124,7 @@ const FEED_NAMES = {silage:'Grass silage', straw:'Wheat straw', corn:'Corn', pel
 const RATIONS = [
   {name:'Calf 1', days:7,  kg:{silage:2.3800000000000008, straw:0.16091954022988508, corn:0, pellets:2.7056179775280893}},
   {name:'Calf 2', days:7,  kg:{silage:0.72000000000000397, straw:0.18390804597701149, corn:0, pellets:3.991011235955054}},
-  {name:'Veal 1', days:35, kg:{silage:0, straw:0.23448275862068965, corn:0, pellets:5.5011235955056179}},
+  {name:'Veal 1', days:35, kg:{silage:0, straw:0.35172413793103446, corn:0, pellets:5.386516853932584}}, // straw lifted 4% -> 6% DM (22 Nov 2026)
   {name:'Veal 2', days:35, kg:{silage:0, straw:0.2804597701149425, corn:1.6547126436781607, pellets:4.9622471910112349}},
   {name:'Veal 3', days:35, kg:{silage:0, straw:0.32643678160919537, corn:3.1501149425287363, pellets:4.5791011235955041}},
   {name:'Veal 4', days:35, kg:{silage:0, straw:0.3724137931034483, corn:4.9903448275862052, pellets:3.858876404494382}},
