@@ -1,5 +1,5 @@
 // Network-first: always try for the latest app, fall back to the cached copy when the barn has no signal.
-const CACHE = 'pfe-barn-v4';
+const CACHE = 'pfe-barn-v5';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
